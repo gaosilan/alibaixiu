@@ -25,7 +25,7 @@
             <button class="btn btn-default navbar-btn fa fa-bars"></button>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-                <li><a href="javaScript:;" id="logout"><i class="fa fa-sign-out" ></i>退出</a></li>
+                <li><a href="javascript:;" id="logout"><i class="fa fa-sign-out"></i>退出</a></li>
             </ul>
         </nav>
         <div class="container-fluid">
@@ -34,8 +34,8 @@
             </div>
             <!-- 有错误信息时展示 -->
             <!-- <div class="alert alert-danger">
-        <strong>错误！</strong>发生XXX错误
-      </div> -->
+              <strong>错误！</strong>发生XXX错误
+            </div> -->
             <form class="row">
                 <div class="col-md-9">
                     <div class="form-group">
@@ -43,7 +43,7 @@
                         <input id="title" class="form-control input-lg" name="title" type="text" placeholder="文章标题">
                     </div>
                     <div class="form-group">
-                        <label for="content">标题</label>
+                        <label for="content">内容</label>
                         <textarea id="content" class="form-control input-lg" name="content" cols="30" rows="10" placeholder="内容"></textarea>
                     </div>
                 </div>
@@ -51,29 +51,30 @@
                     <div class="form-group">
                         <label for="feature">特色图像</label>
                         <!-- show when image chose -->
-                        <img class="help-block thumbnail" style="display: none">
+                        <img class="help-block thumbnail" style="display: none" id="prev">
                         <input id="feature" class="form-control" name="feature" type="file">
+                        <input id="img" name="thumbnail" type="hidden">
                     </div>
                     <div class="form-group">
                         <label for="category">所属分类</label>
                         <select id="category" class="form-control" name="category">
-              <option value="1">未分类</option>
-              <option value="2">潮生活</option>
-            </select>
+                    <option value="">未分类</option>
+                    <!-- <option value="2">潮生活</option> -->
+                  </select>
                     </div>
                     <div class="form-group">
                         <label for="created">发布时间</label>
-                        <input id="created" class="form-control" name="created" type="datetime-local">
+                        <input id="created" class="form-control" name="createAt" type="datetime-local">
                     </div>
                     <div class="form-group">
                         <label for="status">状态</label>
-                        <select id="status" class="form-control" name="status">
-              <option value="drafted">草稿</option>
-              <option value="published">已发布</option>
-            </select>
+                        <select id="status" class="form-control" name="state">
+                    <option value="0">草稿</option>
+                    <option value="1">已发布</option>
+                  </select>
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" type="submit">保存</button>
+                        <button class="btn btn-primary" type="button" id="pAdd">保存</button>
                     </div>
                 </div>
             </form>
@@ -117,11 +118,69 @@
         </ul>
     </div>
 
+
     <script src="../assets/vendors/jquery/jquery.js"></script>
     <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
     <script src="../assets/js/common.js"></script>
+    <script src="../assets/vendors/art-template/template-web.js"></script>
     <script>
         NProgress.done()
+    </script>
+    //构建模板
+    <script type="text/html" id="cTpl">
+        {{each list}}
+        <option value="{{$value._id}}">{{$value.title}}</option>
+        {{/each}}
+    </script>
+    <script>
+        // 完成图片上传功能 
+        $('#feature').on('change', function() {
+            // 创建FormData对象
+            var formData = new FormData();
+            formData.append('avatar', this.files[0]);
+            // 发送ajax
+            $.ajax({
+                type: 'post',
+                url: '/upload',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    $('#img').val(res[0].avatar);
+                    $('#prev').show().attr('src', res[0].avatar);
+                }
+            })
+        });
+
+
+        // 获取所有的分类  
+        $.ajax({
+            type: 'get',
+            url: '/categories',
+            success: function(res) {
+                var str = template('cTpl', {
+                    list: res
+                });
+                // console.log(str);
+                $('#category').append(str);
+            }
+        });
+
+
+
+        //添加文章功能
+        $('#pAdd').on('click', function() {
+            var formData = $('form').serialize();
+            console.log(formData);
+            $.ajax({
+                type: 'post',
+                url: '/posts',
+                data: formData,
+                success: function(res) {
+                    location.href = 'posts.html';
+                }
+            })
+        })
     </script>
 </body>
 
