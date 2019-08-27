@@ -89,7 +89,7 @@
                 <div class="col-md-8">
                     <div class="page-action">
                         <!-- show when multiple checked -->
-                        <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
+                        <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none" id="allDel">批量删除</a>
                     </div>
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
@@ -341,7 +341,33 @@
                     }
                 })
             }
-        })
+        });
+        //实现全选功能
+        $('thead input[type="checkbox"]').on('click', function() {
+            var flag = $(this).prop('checked');
+            $('tbody input[type="checkbox"]').prop('checked', flag);
+
+            if (flag) {
+                $('#allDel').show();
+            } else {
+                $('#allDel').hide();
+            }
+        });
+        $('tbody').on('click', 'input[type="checkbox"]', function() {
+            var checkLength = $('tbody input[type="checkbox"]').length;
+            var cLength = $('tbody input[type="checkbox"]:checked').length;
+            if (checkLength == cLength) {
+                $('thead input[type="checkbox"]').prop('checked', true);
+            } else {
+                $('thead input[type="checkbox"]').prop('checked', false);
+            }
+
+            if (cLength > 1) {
+                $('#allDel').show();
+            } else {
+                $('#allDel').hide();
+            }
+        });
     </script>
 </body>
 
