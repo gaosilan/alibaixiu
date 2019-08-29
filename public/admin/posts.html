@@ -25,7 +25,7 @@
             <button class="btn btn-default navbar-btn fa fa-bars"></button>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-                <li><a href="javaScript:;" id="logout"><i class="fa fa-sign-out" ></i>退出</a></li>
+                <li><a href="javascript:;" id="logout"><i class="fa fa-sign-out"></i>退出</a></li>
             </ul>
         </nav>
         <div class="container-fluid">
@@ -38,13 +38,13 @@
                 <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
                 <form class="form-inline">
                     <select name="category" class="form-control input-sm" id="category">
-            <option value="all">所有分类</option>
-          </select>
+              <option value="all">所有分类</option>
+            </select>
                     <select name="state" class="form-control input-sm" id="state">
-            <option value="all">所有状态</option>
-            <option value="0">草稿</option>
-            <option value="1">已发布</option>
-          </select>
+              <option value="all">所有状态</option>
+              <option value="0">草稿</option>
+              <option value="1">已发布</option>
+            </select>
                     <button class="btn btn-default btn-sm" type="button" id="btnSearch">筛选</button>
                 </form>
                 <ul class="pagination pagination-sm pull-right">
@@ -63,39 +63,39 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>随便一个名称</td>
-                        <td>小小</td>
-                        <td>潮科技</td>
-                        <td class="text-center">2016/10/07</td>
-                        <td class="text-center">已发布</td>
-                        <td class="text-center">
-                            <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                            <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>随便一个名称</td>
-                        <td>小小</td>
-                        <td>潮科技</td>
-                        <td class="text-center">2016/10/07</td>
-                        <td class="text-center">已发布</td>
-                        <td class="text-center">
-                            <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                            <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>随便一个名称</td>
-                        <td>小小</td>
-                        <td>潮科技</td>
-                        <td class="text-center">2016/10/07</td>
-                        <td class="text-center">已发布</td>
-                        <td class="text-center">
-                            <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                            <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                        </td>
-                    </tr>
+                    <!-- <tr>
+              <td>随便一个名称</td>
+              <td>小小</td>
+              <td>潮科技</td>
+              <td class="text-center">2016/10/07</td>
+              <td class="text-center">已发布</td>
+              <td class="text-center">
+                <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>随便一个名称</td>
+              <td>小小</td>
+              <td>潮科技</td>
+              <td class="text-center">2016/10/07</td>
+              <td class="text-center">已发布</td>
+              <td class="text-center">
+                <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              </td>
+            </tr>
+            <tr>
+              <td>随便一个名称</td>
+              <td>小小</td>
+              <td>潮科技</td>
+              <td class="text-center">2016/10/07</td>
+              <td class="text-center">已发布</td>
+              <td class="text-center">
+                <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+              </td>
+            </tr> -->
                 </tbody>
             </table>
         </div>
@@ -138,29 +138,29 @@
         </ul>
     </div>
 
+
     <script src="../assets/vendors/jquery/jquery.js"></script>
     <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
     <script src="../assets/js/common.js"></script>
     <script src="../assets/vendors/art-template/template-web.js"></script>
-    <script>
-        NProgress.done()
-    </script>
     <script type="text/html" id="pTpl">
         {{each records}}
         <tr>
             <td>{{$value.title}}</td>
-            <td>{{$value.author.nickName}}</td>
+            <td>{{$value.author && $value.author.nickName}}</td>
             <td>{{$value.category.title}}</td>
             <td class="text-center">{{$value.createAt && $value.createAt.substr(0,10)}}</td>
-            <td class="text-center">{{$value.state == 1 ? '已发布': '草稿'}}</td>
+            <td class="text-center">{{$value.state == 1 ? '已发布' : '草稿'}}</td>
             <td class="text-center">
-                <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+                <a href="post-add.html?id='{{$value._id}}'" class="btn btn-default btn-xs edit">编辑</a>
+                <a href="javascript:;" class="btn btn-danger btn-xs delete" data-id="{{$value._id}}">删除</a>
             </td>
         </tr>
         {{/each}}
+
     </script>
-    //页码的模板
+
+
     <script type="text/html" id="pageTpl">
         {{if page > 1}}
         <li><a href="javascript:;" onclick="changePage({{page - 1}})">上一页</a></li>
@@ -171,13 +171,19 @@
             {{/if}}
 
     </script>
+
     <script type="text/html" id="cTpl">
         {{each list}}
         <option value="{{$value._id}}">{{$value.title}}</option>
         {{/each}}
     </script>
     <script>
-        //显示所有的文章
+        // 显示所有的文章  
+        /*
+        1.需要向服务器发起请求 
+        2.构建模板 
+        3.渲染数据 
+        */
         var s = $('#state').val();
         var c = $('#category').val();
 
@@ -191,29 +197,30 @@
                     state: state
                 },
                 success: function(res) {
+                    // console.log(res);
+                    window.currentPage = res.page;
                     var str = template('pTpl', res);
                     $('tbody').html(str);
-
-                    var pageStr = template('pTpl', res);
-                    $('pagination').html(pageStr);
+                    var pageStr = template('pageTpl', res);
+                    $('.pagination').html(pageStr);
                 }
             });
         }
         render();
-        //分页的效果
+        // 分页的效果  
         function changePage(index) {
             render(c, s, index);
-
         }
         // 将所有的分类展示到这个页面上
         $.ajax({
             type: 'get',
             url: '/categories',
             success: function(res) {
+                // console.log(res);
                 var str = template('cTpl', {
                     list: res
                 });
-                $('category').append(str);
+                $('#category').append(str);
             }
         });
         // 给筛选按钮注册点击事件 
@@ -222,6 +229,28 @@
             s = $('#state').val();
 
             render(c, s);
+        });
+
+        //删除文章功能
+        $('tbody').on('click', '.delete', function() {
+            if (confirm('您真的确认要删除吗？')) {
+                var id = $(this).attr('data-id');
+                $.ajax({
+                    type: 'delete',
+                    url: '/posts/' + id,
+                    success: function() {
+                        if ($('tbody').children().length == 1) {
+                            if (currentPage == 1) {
+                                render(s, c, currentPage)
+                            } else {
+                                render(s, c, currentPage - 1)
+                            }
+                        } else {
+                            render(s, c, currentPage)
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>
