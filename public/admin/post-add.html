@@ -34,8 +34,8 @@
             </div>
             <!-- 有错误信息时展示 -->
             <!-- <div class="alert alert-danger">
-              <strong>错误！</strong>发生XXX错误
-            </div> -->
+            <strong>错误！</strong>发生XXX错误
+          </div> -->
             <form class="row">
                 <div class="col-md-9">
                     <div class="form-group">
@@ -58,9 +58,9 @@
                     <div class="form-group">
                         <label for="category">所属分类</label>
                         <select id="category" class="form-control" name="category">
-                    <option value="">未分类</option>
-                    <!-- <option value="2">潮生活</option> -->
-                  </select>
+                  <option value="">未分类</option>
+                  <!-- <option value="2">潮生活</option> -->
+                </select>
                     </div>
                     <div class="form-group">
                         <label for="created">发布时间</label>
@@ -69,12 +69,13 @@
                     <div class="form-group">
                         <label for="status">状态</label>
                         <select id="status" class="form-control" name="state">
-                    <option value="0">草稿</option>
-                    <option value="1">已发布</option>
-                  </select>
+                  <option value="0">草稿</option>
+                  <option value="1">已发布</option>
+                </select>
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary" type="button" id="pAdd">保存</button>
+                        <button class="btn btn-primary" type="button" id="pEdit" style="display:none">编辑</button>
                     </div>
                 </div>
             </form>
@@ -119,6 +120,7 @@
     </div>
 
 
+
     <script src="../assets/vendors/jquery/jquery.js"></script>
     <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
     <script src="../assets/js/common.js"></script>
@@ -129,7 +131,7 @@
     //构建模板
     <script type="text/html" id="cTpl">
         {{each list}}
-        <option value="{{$value._id}}">{{$value.title}}</option>
+        <option value="{{@$value._id}}">{{$value.title}}</option>
         {{/each}}
     </script>
     <script>
@@ -151,8 +153,6 @@
                 }
             })
         });
-
-
         // 获取所有的分类  
         $.ajax({
             type: 'get',
@@ -165,19 +165,84 @@
                 $('#category').append(str);
             }
         });
-
-
-
-        //添加文章功能
+        // 添加文章功能 
         $('#pAdd').on('click', function() {
             var formData = $('form').serialize();
-            console.log(formData);
             $.ajax({
                 type: 'post',
                 url: '/posts',
                 data: formData,
                 success: function(res) {
                     location.href = 'posts.html';
+                }
+            });
+        });
+        var id = getUrlParams('id');
+        console.log(id);
+
+        if (id != -1) {
+            $.ajax({
+                type: 'get',
+                url: '/posts/' + id,
+                success: function(res) {
+                    console.log(res, 111);
+                    $('#title').val(res.title);
+                    $('#content').val(res.content);
+                    $('h1').text('编辑文章');
+                    // 预览图片
+                    $('#prev').show().attr('src', res.thumbnail);
+                    $('#img').val(res.thumbnail);
+
+                    // 将对应的分类显示出来 
+                    $('#category > option').each((index, item) => {
+                        // 判断option里面的value属性的值与res.category的值是否相等 如果相等 就表示是这个分类 给其设置一个selected 
+                        if ($(item).attr('value') == res.category) {
+                            $(item).prop('selected', true);
+                        }
+                    });
+
+
+                    $('#status > option').each((index, item) => {
+                        // 判断option里面的value属性的值与res.category的值是否相等 如果相等 就表示是这个分类 给其设置一个selected 
+                        if ($(item).attr('value') == res.state) {
+                            $(item).prop('selected', true);
+                        }
+                    });
+
+                    $('#created').val(res.createAt.substr(0, 16));
+
+                    // 将保存按钮隐藏 将编辑按钮显示出来 
+                    $('#pAdd').hide();
+                    $('#pEdit').show();
+
+                }
+            })
+
+        }
+        console.log(location.search);
+
+        function getUrlParams(name) {
+            var paramsAry = location.search.substr(1).split('&');
+            console.log(paramsAry);
+
+            // 循环数据
+            for (var i = 0; i < paramsAry.length; i++) {
+                var tmp = paramsAry[i].split('=');
+                console.log(tmp);
+
+                if (tmp[0] == name) {
+                    return tmp[1];
+                }
+            }
+            return -1;
+        }
+        $('#pEdit').on('click', function() {
+            $.ajax({
+                type: 'put',
+                url: '/posts/' + id,
+                data: $('form').serialize(),
+                success() {
+                    location.href = 'posts.html'
                 }
             })
         })
