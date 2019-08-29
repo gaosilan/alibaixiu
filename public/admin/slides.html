@@ -25,7 +25,7 @@
             <button class="btn btn-default navbar-btn fa fa-bars"></button>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-                <li><a href="javaScript:;" id="logout"><i class="fa fa-sign-out" ></i>退出</a></li>
+                <li><a href="javascript:;" id="logout"><i class="fa fa-sign-out"></i>退出</a></li>
             </ul>
         </nav>
         <div class="container-fluid">
@@ -34,28 +34,29 @@
             </div>
             <!-- 有错误信息时展示 -->
             <!-- <div class="alert alert-danger">
-        <strong>错误！</strong>发生XXX错误
-      </div> -->
+              <strong>错误！</strong>发生XXX错误
+            </div> -->
             <div class="row">
                 <div class="col-md-4">
-                    <form>
+                    <form id="slidesForm">
                         <h2>添加新轮播内容</h2>
                         <div class="form-group">
                             <label for="image">图片</label>
                             <!-- show when image chose -->
-                            <img class="help-block thumbnail" style="display: none">
+                            <img class="help-block thumbnail" style="display: none" id="prev">
                             <input id="image" class="form-control" name="image" type="file">
+                            <input id="file" name="image" type="hidden">
                         </div>
                         <div class="form-group">
                             <label for="text">文本</label>
-                            <input id="text" class="form-control" name="text" type="text" placeholder="文本">
+                            <input id="text" class="form-control" name="title" type="text" placeholder="文本">
                         </div>
                         <div class="form-group">
                             <label for="link">链接</label>
                             <input id="link" class="form-control" name="link" type="text" placeholder="链接">
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary" type="submit">添加</button>
+                            <button class="btn btn-primary" type="button" id="sAdd">添加</button>
                         </div>
                     </form>
                 </div>
@@ -70,22 +71,14 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="text-center"><img class="slide" src="../uploads/slide_1.jpg"></td>
-                                <td>XIU功能演示</td>
-                                <td>#</td>
-                                <td class="text-center">
-                                    <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
-                                </td>
-                            </tr>
-                            <tr>
+                            <!--  <tr>
                                 <td class="text-center"><img class="slide" src="../uploads/slide_2.jpg"></td>
                                 <td>XIU功能演示</td>
                                 <td>#</td>
                                 <td class="text-center">
                                     <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
                                 </td>
-                            </tr>
+                            </tr> -->
                         </tbody>
                     </table>
                 </div>
@@ -130,11 +123,101 @@
         </ul>
     </div>
 
+
     <script src="../assets/vendors/jquery/jquery.js"></script>
     <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
     <script src="../assets/js/common.js"></script>
+    <script src="../assets/vendors/art-template/template-web.js"></script>
     <script>
         NProgress.done()
+    </script>
+    //轮播图列表模板
+    <script type="text/html" id="slidesTpl">
+        {{each data}}
+        <tr>
+            <td class="text-center"><img class="slide" src="{{$value.image}}"></td>
+            <td>{{$value.title}}</td>
+            <td>{{$value.link}}</td>
+            <td class="text-center">
+                <a href="javascript:;" class="btn btn-danger btn-xs delete" data-id="{{$value._id}}">删除</a>
+            </td>
+        </tr>
+        {{/each}}
+    </script>
+    <script>
+        // 当管理员选择文件的时候
+        $('#image').on('change', function() {
+            // 用户选择到的文件
+            var file = this.files[0];
+            // console.log(file);
+            // 创建formData对象实现二进制文件上传
+            var formData = new FormData();
+            // 将管理员选择到的文件添加到formData对象中
+            formData.append('image', file);
+            // 向服务器端发送请求 实现图片上传
+            $.ajax({
+                type: 'post',
+                url: '/upload',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log(response)
+                    $('#file').val(response[0].image)
+                    $('#prev').show().attr("src", response[0].image);
+                }
+            })
+        });
+        var sArr = [];
+        // 当轮播图表单发生提交行为时
+        $('#sAdd').on('click', function() {
+            // 获取管理员在表单中输入的内容
+            var formData = $("#slidesForm").serialize();
+            // 向服务器端发送请求 添加轮播图数据
+
+            $.ajax({
+                type: 'post',
+                url: '/slides',
+                data: formData,
+                success: function(res) {
+                    sArr.push(res);
+                    render();
+                }
+            })
+
+        })
+
+        function render() {
+            var html = template('slidesTpl', {
+                data: sArr
+            });
+            $('tbody').html(html);
+        }
+        // 向服务器端发送请求 索要图片轮播列表数据
+        $.ajax({
+            type: 'get',
+            url: '/slides',
+            success: function(response) {
+                sArr = response;
+                render();
+            }
+        })
+
+        //当删除按钮被点击时
+        $('tbody').on('click', '.delete', function() {
+            if (confirm('您真的要进行删除操作吗？')) {
+                var id = $(this).attr('data-id');
+                $.ajax({
+                    type: 'delete',
+                    url: '/slides/' + id,
+                    success: function(res) {
+                        var index = sArr.findIndex(item => item._id == id);
+                        sArr.splice(index, 1);
+                        render();
+                    }
+                })
+            }
+        });
     </script>
 </body>
 
