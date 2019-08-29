@@ -25,7 +25,7 @@
             <button class="btn btn-default navbar-btn fa fa-bars"></button>
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="profile.html"><i class="fa fa-user"></i>个人中心</a></li>
-                <li><a href="javaScript:;" id="logout"><i class="fa fa-sign-out" ></i>退出</a></li>
+                <li><a href="javascript:;" id="logout"><i class="fa fa-sign-out"></i>退出</a></li>
             </ul>
         </nav>
         <div class="container-fluid">
@@ -41,9 +41,9 @@
                             <h3 class="panel-title">站点内容统计：</h3>
                         </div>
                         <ul class="list-group">
-                            <li class="list-group-item"><strong>10</strong>篇文章（<strong>2</strong>篇草稿）</li>
-                            <li class="list-group-item"><strong>6</strong>个分类</li>
-                            <li class="list-group-item"><strong>5</strong>条评论（<strong>1</strong>条待审核）</li>
+                            <li class="list-group-item" id="post"></li>
+                            <li class="list-group-item" id="category"></li>
+                            <li class="list-group-item" id="comment"></li>
                         </ul>
                     </div>
                 </div>
@@ -90,11 +90,40 @@
         </ul>
     </div>
 
+
     <script src="../assets/vendors/jquery/jquery.js"></script>
     <script src="../assets/vendors/bootstrap/js/bootstrap.js"></script>
     <script src="../assets/js/common.js"></script>
     <script>
         NProgress.done()
+    </script>
+    <script>
+        //获取文章的数量
+        $.ajax({
+                type: 'get',
+                url: '/posts/count',
+                succes: function(res) {
+                    console.log(res);
+                    return;
+                    $('#post').html('<strong>' + res.postCount + '</strong>篇文章（<strong>' + res.draftCount + '</strong>篇草稿）');
+                }
+            })
+            // 获取分类数量
+        $.ajax({
+                type: 'get',
+                url: '/categories/count',
+                success: function(res) {
+                    $('#category').html('<strong>' + res.categoryCount + '</strong>个分类')
+                }
+            })
+            // 获取评论数量
+        $.ajax({
+            type: 'get',
+            url: '/comments/count',
+            success: function(res) {
+                $('#comment').html('<strong>' + res.commentCount + '</strong>条评论')
+            }
+        })
     </script>
 </body>
 
