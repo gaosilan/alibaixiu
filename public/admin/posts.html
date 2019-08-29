@@ -152,7 +152,7 @@
             <td class="text-center">{{$value.createAt && $value.createAt.substr(0,10)}}</td>
             <td class="text-center">{{$value.state == 1 ? '已发布' : '草稿'}}</td>
             <td class="text-center">
-                <a href="post-add.html?id='{{$value._id}}'" class="btn btn-default btn-xs edit">编辑</a>
+                <a href='post-add.html?id={{@$value._id}}' class="btn btn-default btn-xs edit">编辑</a>
                 <a href="javascript:;" class="btn btn-danger btn-xs delete" data-id="{{$value._id}}">删除</a>
             </td>
         </tr>
@@ -197,7 +197,7 @@
                     state: state
                 },
                 success: function(res) {
-                    // console.log(res);
+                    console.log(res);
                     window.currentPage = res.page;
                     var str = template('pTpl', res);
                     $('tbody').html(str);
